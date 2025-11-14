@@ -1,20 +1,32 @@
 import { useState } from "react";
 import "./App.css";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 
-import { TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import {
+    Button,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Typography,
+} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
+
+import Slider from "@mui/material/Slider";
+
+import Box from "@mui/material/Box";
 
 import Produs from "./model/Produs";
 
 import { useEffect } from "react";
 
 function App() {
-    const [count, setCount] = useState(0);
-
     const [produse, setProduse] = useState<Produs[]>([]);
+    const [filteredProduse, setFilteredProduse] = useState<Produs[]>([]);
+
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(1000);
+    const [priceRange, setPriceRange] = useState<number[]>([20, 370]);
 
     async function getProduse() {
         const response = await fetch("http://localhost:8080/produse", {
@@ -42,6 +54,57 @@ function App() {
         );
 
         setProduse(produse);
+        setFilteredProduse(produse);
+
+        let minPrice = 9999999999;
+        let maxPrice = 0;
+
+        for (const produs of produse) {
+            const price = produs.getPret();
+
+            minPrice = price < minPrice ? price : minPrice;
+            maxPrice = price > maxPrice ? price : maxPrice;
+        }
+
+        setMinPrice(minPrice);
+        setMaxPrice(maxPrice);
+        setPriceRange([minPrice, maxPrice]);
+    }
+
+    const MIN_DISTANCE = 25;
+    const MIN_PRICE_INDEX = 0;
+    const MAX_PRICE_INDEX = 1;
+
+    const handlePriceRangeChange = (
+        event: Event,
+        newPriceRange: number[],
+        activeThumb: number
+    ) => {
+        let [low, high] = newPriceRange;
+
+        if (activeThumb === 0) {
+            // left thumb
+            low = Math.min(low, high - MIN_DISTANCE);
+        } else {
+            // right thumb
+            high = Math.max(high, low + MIN_DISTANCE);
+        }
+
+        setPriceRange([low, high]);
+    };
+
+    function valuetext(value: number) {
+        return `${value}°C`;
+    }
+
+    function filterProduseByPriceRange() {
+        const filteredProduse: Produs[] = produse.filter(
+            (produs) =>
+                produs.getPret() >= priceRange[MIN_PRICE_INDEX] &&
+                produs.getPret() <= priceRange[MAX_PRICE_INDEX]
+        );
+
+        setFilteredProduse(filteredProduse);
     }
 
     useEffect(() => {
@@ -50,30 +113,28 @@ function App() {
 
     return (
         <>
-            <div>
-                <a href="https://vite.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img
-                        src={reactLogo}
-                        className="logo react"
-                        alt="React logo"
-                    />
-                </a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
+            <Box
+                sx={{
+                    width: "100%",
+                    display: "inline-flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                }}
+            >
+                <Typography>Pret</Typography>
+                <Slider
+                    min={minPrice}
+                    max={maxPrice}
+                    getAriaLabel={() => "Price range"}
+                    value={priceRange}
+                    onChange={handlePriceRangeChange}
+                    valueLabelDisplay="on"
+                    getAriaValueText={valuetext}
+                    disableSwap
+                    sx={{ width: "80%" }}
+                />
+                <Button onClick={filterProduseByPriceRange}>Filter</Button>
+            </Box>
             <TableContainer>
                 <Table>
                     <TableHead>
@@ -88,7 +149,7 @@ function App() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {produse.map((produs) => (
+                        {filteredProduse.map((produs) => (
                             <TableRow key={produs.getId()}>
                                 <TableCell align="center">
                                     {produs.getNume()}

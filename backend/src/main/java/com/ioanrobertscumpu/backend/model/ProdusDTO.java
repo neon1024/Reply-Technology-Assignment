@@ -1,32 +1,13 @@
 package com.ioanrobertscumpu.backend.model;
 
-import java.util.UUID;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "produse")
-public class Produs {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class ProdusDTO {
     private String nume;
     private String descriere;
     private String categorie;
     private String subcategorie;
     private String numeVanzator;
-    private double pret;
-    private int cantitate;
-
-    public Produs() {}
-
-    public UUID getId() {
-        return id;
-    }
+    private Double pret;
+    private Integer cantitate;
 
     public String getNume() {
         return nume;
@@ -76,16 +57,11 @@ public class Produs {
         this.pret = pret;
     }
 
-    public int getCantitate() {
+    public Integer getCantitate() {
         return cantitate;
     }
 
-    public void setCantitate(int cantitate) {
+    public void setCantitate(Integer cantitate) {
         this.cantitate = cantitate;
-    }
-
-    @Override
-    public String toString() {
-        return id + " " + nume + " " + descriere + " " + categorie + " " + subcategorie + " " + numeVanzator + " " + pret + " " + cantitate + "\n";
     }
 }

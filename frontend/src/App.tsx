@@ -24,6 +24,10 @@ import AddProdusForm from "./components/AddProdusForm";
 import Produs from "./model/Produs";
 
 function App() {
+    const MIN_DISTANCE = 25;
+    const MIN_PRICE_INDEX = 0;
+    const MAX_PRICE_INDEX = 1;
+
     const [produse, setProduse] = useState<Produs[]>([]);
     const [filteredProduse, setFilteredProduse] = useState<Produs[]>([]);
 
@@ -35,10 +39,6 @@ function App() {
     const [selectedProduseIds, setSelectedProduseIds] = useState<string[]>([]);
     const [addProdusFormVisibility, setAddProdusFormVisibility] =
         useState(false);
-
-    const MIN_DISTANCE = 25;
-    const MIN_PRICE_INDEX = 0;
-    const MAX_PRICE_INDEX = 1;
 
     async function getProduse() {
         const response = await fetch("http://localhost:8080/produse", {
@@ -73,18 +73,16 @@ function App() {
 
         setMinPrice(min);
         setMaxPrice(max);
-        setPriceRange([min, max]);
-
-        filterProduse(produse, numeFilter, [min, max]);
     }
 
+    // TODO put inside an useEffect and erase all other filterProduse calls
     // Filter products by name and price
     function filterProduse(
         list: Produs[] = produse,
         name: string = numeFilter,
         range: number[] = priceRange
     ) {
-        const filtered = list.filter(
+        const filteredProduse = list.filter(
             (produs) =>
                 (name === "" ||
                     produs
@@ -94,7 +92,8 @@ function App() {
                 produs.getPret() >= range[MIN_PRICE_INDEX] &&
                 produs.getPret() <= range[MAX_PRICE_INDEX]
         );
-        setFilteredProduse(filtered);
+
+        setFilteredProduse(filteredProduse);
     }
 
     const handlePriceRangeChange = (
@@ -108,12 +107,10 @@ function App() {
         else high = Math.max(high, low + MIN_DISTANCE);
 
         setPriceRange([low, high]);
-        filterProduse(produse, numeFilter, [low, high]);
     };
 
     const handleNumeFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNumeFilter(e.target.value);
-        filterProduse(produse, e.target.value, priceRange);
     };
 
     const valuetext = (value: number) => `${value} RON`;
@@ -183,6 +180,10 @@ function App() {
         getProduse();
     }, []);
 
+    useEffect(() => {
+        filterProduse();
+    }, [numeFilter, priceRange, produse]);
+
     return (
         <>
             <AddProdusForm
@@ -234,6 +235,7 @@ function App() {
                     />
 
                     <Typography>Pret</Typography>
+                    <Typography sx={{ opacity: 0.5 }}>{minPrice}</Typography>
                     <Slider
                         min={minPrice}
                         max={maxPrice}
@@ -242,8 +244,9 @@ function App() {
                         valueLabelDisplay="on"
                         getAriaValueText={valuetext}
                         disableSwap
-                        sx={{ width: "60%" }}
+                        sx={{ width: "50%" }}
                     />
+                    <Typography sx={{ opacity: 0.5 }}>{maxPrice}</Typography>
                 </Box>
             </Stack>
 

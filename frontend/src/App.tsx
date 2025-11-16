@@ -19,8 +19,10 @@ import TableContainer from "@mui/material/TableContainer";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 import AddProdusForm from "./components/AddProdusForm";
+import UpdateProdusForm from "./components/UpdateProdusForm";
 import Produs from "./model/Produs";
 
 function App() {
@@ -39,6 +41,36 @@ function App() {
     const [selectedProduseIds, setSelectedProduseIds] = useState<string[]>([]);
     const [addProdusFormVisibility, setAddProdusFormVisibility] =
         useState(false);
+
+    const [produsToUpdate, setProdusToUpdate] = useState<Produs | null>(null);
+
+    async function handleUpdateProdus(updatedProdus: Produs) {
+        const id = updatedProdus.getId();
+
+        const response = await fetch(`http://localhost:8080/produse/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nume: updatedProdus.getNume(),
+                descriere: updatedProdus.getDescriere(),
+                categorie: updatedProdus.getCategorie(),
+                subcategorie: updatedProdus.getSubcategorie(),
+                numeVanzator: updatedProdus.getNumeVanzator(),
+                pret: updatedProdus.getPret(),
+                cantitate: updatedProdus.getCantitate(),
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data != 0) {
+            console.log("update successful");
+        } else {
+            console.error("failed to update");
+        }
+
+        await getProduse();
+    }
 
     async function getProduse() {
         const response = await fetch("http://localhost:8080/produse", {
@@ -127,7 +159,7 @@ function App() {
         else setSelectedProduseIds([]);
     };
 
-    const toggleProdusFormVisibility = () =>
+    const toggleAddProdusFormVisibility = () =>
         setAddProdusFormVisibility(!addProdusFormVisibility);
 
     async function postProdus(
@@ -189,7 +221,14 @@ function App() {
             <AddProdusForm
                 open={addProdusFormVisibility}
                 onAdd={postProdus}
-                onClose={toggleProdusFormVisibility}
+                onClose={toggleAddProdusFormVisibility}
+            />
+
+            <UpdateProdusForm
+                open={produsToUpdate != null}
+                produs={produsToUpdate}
+                onUpdate={handleUpdateProdus}
+                onClose={() => setProdusToUpdate(null)}
             />
 
             <Stack direction="column" spacing={8}>
@@ -211,7 +250,7 @@ function App() {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={toggleProdusFormVisibility}
+                        onClick={toggleAddProdusFormVisibility}
                     >
                         Add
                     </Button>
@@ -275,6 +314,7 @@ function App() {
                                     }
                                 />
                             </TableCell>
+                            <TableCell align="center">Edit</TableCell>
                             <TableCell align="center">Nume</TableCell>
                             <TableCell align="center">Descriere</TableCell>
                             <TableCell align="center">Categorie</TableCell>
@@ -302,6 +342,14 @@ function App() {
                                         onChange={() =>
                                             handleSelectRow(produs.getId())
                                         }
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Button
+                                        onClick={() =>
+                                            setProdusToUpdate(produs)
+                                        }
+                                        startIcon={<EditIcon />}
                                     />
                                 </TableCell>
                                 <TableCell align="center">

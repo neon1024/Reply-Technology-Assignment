@@ -26,7 +26,7 @@ function App() {
 
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(1000);
-    const [priceRange, setPriceRange] = useState<number[]>([20, 370]);
+    const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
 
     async function getProduse() {
         const response = await fetch("http://localhost:8080/produse", {

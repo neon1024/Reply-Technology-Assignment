@@ -22,10 +22,12 @@ import Produs from "./model/Produs";
 
 import { useEffect } from "react";
 
-import { Delete } from "@mui/icons-material";
+import { CheckBox, Delete } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+
+import { Checkbox } from "@mui/material";
 
 function App() {
     const [produse, setProduse] = useState<Produs[]>([]);
@@ -118,6 +120,24 @@ function App() {
         getProduse();
     }, []);
 
+    const [selectedProduseIds, setSelectedProduseIds] = useState<string[]>([]);
+
+    const handleSelectRow = (id: string) => {
+        setSelectedProduseIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
+    };
+
+    const handleSelectAllRows = (checked: boolean) => {
+        if (checked) {
+            setSelectedProduseIds(
+                filteredProduse.map((produs) => produs.getId())
+            );
+        } else {
+            setSelectedProduseIds([]);
+        }
+    };
+
     return (
         <>
             <Stack direction={"column"} spacing={8}>
@@ -171,6 +191,23 @@ function App() {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
+                            <TableCell>
+                                <Checkbox
+                                    checked={
+                                        selectedProduseIds.length ===
+                                            filteredProduse.length &&
+                                        filteredProduse.length > 0
+                                    }
+                                    // indeterminate={
+                                    //     selectedProduseIds.length > 0 &&
+                                    //     selectedProduseIds.length <
+                                    //         filteredProduse.length
+                                    // }
+                                    onChange={(e) =>
+                                        handleSelectAllRows(e.target.checked)
+                                    }
+                                />
+                            </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold", color: "#000" }}
@@ -226,6 +263,16 @@ function App() {
                                     cursor: "pointer",
                                 }}
                             >
+                                <TableCell>
+                                    <Checkbox
+                                        checked={selectedProduseIds.includes(
+                                            produs.getId()
+                                        )}
+                                        onChange={() =>
+                                            handleSelectRow(produs.getId())
+                                        }
+                                    />
+                                </TableCell>
                                 <TableCell align="center">
                                     {produs.getNume()}
                                 </TableCell>

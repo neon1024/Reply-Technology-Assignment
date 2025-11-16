@@ -22,7 +22,7 @@ public interface ProdusRepository extends JpaRepository<Produs, UUID> {
         "p.cantitate = COALESCE(:cantitate, p.cantitate) " +
         "WHERE p.id = :id"
     )
-    public void updateById(
+    public int updateById(
         @Param("id") UUID id,
         @Param("nume") String nume,
         @Param("descriere") String descriere,

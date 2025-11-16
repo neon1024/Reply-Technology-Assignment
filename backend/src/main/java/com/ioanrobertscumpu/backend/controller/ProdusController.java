@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import jakarta.validation.Valid;
 
 import com.ioanrobertscumpu.backend.model.ProdusDTO;
 import com.ioanrobertscumpu.backend.model.Produs;
@@ -27,29 +31,42 @@ public class ProdusController {
     }
 
     @GetMapping
-    public List<Produs> getProduse() {
-        return produseService.getProduse();
+    public ResponseEntity<List<Produs>> getProduse() {
+        List<Produs> produse = produseService.getProduse();
+        return ResponseEntity.ok(produse);
     }
 
     @PostMapping
-    public Produs postProdus(@RequestBody Produs produs) {
-        return produseService.addProdus(produs);
+    public ResponseEntity<Produs> postProdus(@Valid @RequestBody Produs produs) {
+        Produs savedProdus = produseService.addProdus(produs);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProdus);
     }
 
-    // TODO add codes (404)
     @DeleteMapping("/{id}")
-    public void deleteProdus(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteProdus(@PathVariable UUID id) {
         produseService.deleteProdus(id);
+        return ResponseEntity.noContent().build();
     }
 
-    // TODO make update return updated entity
     @PutMapping("/{id}")
-    public void putProdus(@PathVariable UUID id, @RequestBody ProdusDTO dto) {        
-        produseService.updateProdus(id, dto);
+    public ResponseEntity<Integer> putProdus(@PathVariable UUID id, @Valid @RequestBody ProdusDTO dto) {        
+        int affectedRows = produseService.updateProdus(id, dto);
+
+        if(affectedRows != 0) {
+            return ResponseEntity.ok(affectedRows);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PatchMapping("/{id}")
-    public void patchProdus(@PathVariable UUID id, @RequestBody ProdusDTO dto) {
-        produseService.updateProdus(id, dto);
+    public ResponseEntity<Integer> patchProdus(@PathVariable UUID id, @Valid @RequestBody ProdusDTO dto) {
+        int affectedRows = produseService.updateProdus(id, dto);
+        
+        if(affectedRows != 0) {
+            return ResponseEntity.ok(affectedRows);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

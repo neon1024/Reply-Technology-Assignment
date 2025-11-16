@@ -1,12 +1,22 @@
 package com.ioanrobertscumpu.backend.model;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class ProdusDTO {
+    @NotBlank
     private String nume;
     private String descriere;
+    @Size(max = 128)
     private String categorie;
+    @Size(max = 128)
     private String subcategorie;
+    @Size(max = 128)
     private String numeVanzator;
+    @Min(0)
     private Double pret;
+    @Min(0)
     private Integer cantitate;
 
     public String getNume() {

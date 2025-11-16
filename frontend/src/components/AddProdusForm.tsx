@@ -33,7 +33,7 @@ export default function AddProdusForm({
     const [categorie, setCategorie] = useState("");
     const [subcategorie, setSubcategorie] = useState("");
     const [numeVanzator, setNumeVanzator] = useState("");
-    const [pret, setPret] = useState("");
+    const [pret, setPret] = useState("0");
     const [cantitate, setCantitate] = useState("1");
 
     const handleSubmit = async () => {
@@ -52,7 +52,7 @@ export default function AddProdusForm({
         setCategorie("");
         setSubcategorie("");
         setNumeVanzator("");
-        setPret("");
+        setPret("0");
         setCantitate("1");
     };
 
@@ -96,7 +96,6 @@ export default function AddProdusForm({
                         value={categorie}
                         onChange={(e) => setCategorie(e.target.value)}
                         fullWidth
-                        required
                         size="small"
                     ></TextField>
 
@@ -105,7 +104,6 @@ export default function AddProdusForm({
                         value={subcategorie}
                         onChange={(e) => setSubcategorie(e.target.value)}
                         fullWidth
-                        required
                         size="small"
                     ></TextField>
 
@@ -114,7 +112,6 @@ export default function AddProdusForm({
                         value={numeVanzator}
                         onChange={(e) => setNumeVanzator(e.target.value)}
                         fullWidth
-                        required
                         size="small"
                     ></TextField>
 
@@ -124,7 +121,6 @@ export default function AddProdusForm({
                         value={pret}
                         onChange={(e) => setPret(e.target.value)}
                         fullWidth
-                        required
                         size="small"
                     />
 

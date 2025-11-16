@@ -30,8 +30,8 @@ public class ProdusService {
         produseRepository.deleteById(id);
     }
 
-    public void updateProdus(UUID id, ProdusDTO dto) {
-        produseRepository.updateById(
+    public int updateProdus(UUID id, ProdusDTO dto) {
+        return produseRepository.updateById(
             id,
             dto.getNume(),
             dto.getDescriere(),

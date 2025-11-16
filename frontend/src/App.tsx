@@ -65,7 +65,7 @@ function App() {
         setProduse(produse);
         setFilteredProduse(produse);
 
-        let minPrice = 9999999999;
+        let minPrice = 999999;
         let maxPrice = 0;
 
         for (const produs of produse) {
@@ -73,6 +73,11 @@ function App() {
 
             minPrice = price < minPrice ? price : minPrice;
             maxPrice = price > maxPrice ? price : maxPrice;
+        }
+
+        if (produse.length == 0) {
+            minPrice = 0;
+            maxPrice = 0;
         }
 
         setMinPrice(minPrice);
@@ -147,7 +152,7 @@ function App() {
         pret: number,
         cantitate: number
     ) {
-        const response = await fetch("http://localhost:8080/produse", {
+        await fetch("http://localhost:8080/produse", {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -164,18 +169,31 @@ function App() {
             }),
         });
 
-        const data = response.json;
-
-        console.log(data);
-
-        getProduse();
+        await getProduse();
     }
 
     const [addProdusFormVisibility, setAddProdusFormVisibility] =
         useState(false);
 
-    function toggleProdusFormVisibility() {
+    const toggleProdusFormVisibility = () => {
         setAddProdusFormVisibility(!addProdusFormVisibility);
+    };
+
+    async function deleteProdus(id: string) {
+        try {
+            const res = await fetch(`http://localhost:8080/produse/${id}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error(`Failed to delete product ${id}`);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function deleteSelectedRows() {
+        await Promise.all(selectedProduseIds.map((id) => deleteProdus(id)));
+        await getProduse();
+        setSelectedProduseIds([]);
     }
 
     return (
@@ -194,7 +212,11 @@ function App() {
                         alignItems: "center",
                     }}
                 >
-                    <Button variant="contained" startIcon={<DeleteIcon />}>
+                    <Button
+                        variant="contained"
+                        startIcon={<DeleteIcon />}
+                        onClick={deleteSelectedRows}
+                    >
                         Delete
                     </Button>
                     <Button
@@ -235,6 +257,7 @@ function App() {
                     boxShadow: 3,
                     maxHeight: "60vh", // keeps table scrollable if too many rows
                     overflowY: "auto",
+                    overflowX: "auto",
                 }}
             >
                 <Table stickyHeader>

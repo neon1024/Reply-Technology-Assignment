@@ -53,7 +53,7 @@ export default function AddProdusForm({
         setSubcategorie("");
         setNumeVanzator("");
         setPret("");
-        setCantitate("");
+        setCantitate("1");
     };
 
     return (

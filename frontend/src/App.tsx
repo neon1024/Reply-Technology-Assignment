@@ -22,12 +22,12 @@ import Produs from "./model/Produs";
 
 import { useEffect } from "react";
 
-import { CheckBox, Delete } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { Checkbox } from "@mui/material";
+import AddProdusForm from "./components/AddProdusForm";
 
 function App() {
     const [produse, setProduse] = useState<Produs[]>([]);
@@ -138,8 +138,53 @@ function App() {
         }
     };
 
+    async function postProdus(
+        nume: string,
+        descriere: string,
+        categorie: string,
+        subcategorie: string,
+        numeVanzator: string,
+        pret: number,
+        cantitate: number
+    ) {
+        const response = await fetch("http://localhost:8080/produse", {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                nume: nume,
+                descriere: descriere,
+                categorie: categorie,
+                subcategorie: subcategorie,
+                numeVanzator: numeVanzator,
+                pret: pret,
+                cantitate: cantitate,
+            }),
+        });
+
+        const data = response.json;
+
+        console.log(data);
+
+        getProduse();
+    }
+
+    const [addProdusFormVisibility, setAddProdusFormVisibility] =
+        useState(false);
+
+    function toggleProdusFormVisibility() {
+        setAddProdusFormVisibility(!addProdusFormVisibility);
+    }
+
     return (
         <>
+            <AddProdusForm
+                open={addProdusFormVisibility}
+                onAdd={postProdus}
+                onClose={toggleProdusFormVisibility}
+            />
             <Stack direction={"column"} spacing={8}>
                 <Box
                     sx={{
@@ -152,7 +197,11 @@ function App() {
                     <Button variant="contained" startIcon={<DeleteIcon />}>
                         Delete
                     </Button>
-                    <Button variant="contained" startIcon={<AddIcon />}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={toggleProdusFormVisibility}
+                    >
                         Add
                     </Button>
                 </Box>

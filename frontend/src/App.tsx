@@ -3,12 +3,14 @@ import "./App.css";
 
 import {
     Button,
+    Stack,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
     Typography,
 } from "@mui/material";
+
 import Table from "@mui/material/Table";
 import TableContainer from "@mui/material/TableContainer";
 
@@ -19,6 +21,11 @@ import Box from "@mui/material/Box";
 import Produs from "./model/Produs";
 
 import { useEffect } from "react";
+
+import { Delete } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 function App() {
     const [produse, setProduse] = useState<Produs[]>([]);
@@ -113,44 +120,112 @@ function App() {
 
     return (
         <>
-            <Box
+            <Stack direction={"column"} spacing={8}>
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "inline-flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
+                    <Button variant="contained" startIcon={<DeleteIcon />}>
+                        Delete
+                    </Button>
+                    <Button variant="contained" startIcon={<AddIcon />}>
+                        Add
+                    </Button>
+                </Box>
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "inline-flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
+                    <Typography>Pret</Typography>
+                    <Slider
+                        min={minPrice}
+                        max={maxPrice}
+                        getAriaLabel={() => "Price range"}
+                        value={priceRange}
+                        onChange={handlePriceRangeChange}
+                        valueLabelDisplay="on"
+                        getAriaValueText={valuetext}
+                        disableSwap
+                        sx={{ width: "80%" }}
+                    />
+                    <Button onClick={filterProduseByPriceRange}>Filter</Button>
+                </Box>
+            </Stack>
+            <TableContainer
                 sx={{
-                    width: "100%",
-                    display: "inline-flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    mt: 4,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    maxHeight: "60vh", // keeps table scrollable if too many rows
+                    overflowY: "auto",
                 }}
             >
-                <Typography>Pret</Typography>
-                <Slider
-                    min={minPrice}
-                    max={maxPrice}
-                    getAriaLabel={() => "Price range"}
-                    value={priceRange}
-                    onChange={handlePriceRangeChange}
-                    valueLabelDisplay="on"
-                    getAriaValueText={valuetext}
-                    disableSwap
-                    sx={{ width: "80%" }}
-                />
-                <Button onClick={filterProduseByPriceRange}>Filter</Button>
-            </Box>
-            <TableContainer>
-                <Table>
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center">Nume</TableCell>
-                            <TableCell align="center">Descriere</TableCell>
-                            <TableCell align="center">Categorie</TableCell>
-                            <TableCell align="center">Subcategorie</TableCell>
-                            <TableCell align="center">Nume Vanzator</TableCell>
-                            <TableCell align="center">Pret</TableCell>
-                            <TableCell align="center">Cantitate</TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Nume
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Descriere
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Categorie
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Subcategorie
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Nume Vanzator
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Pret
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", color: "#000" }}
+                            >
+                                Cantitate
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredProduse.map((produs) => (
-                            <TableRow key={produs.getId()}>
+                        {filteredProduse.map((produs, index) => (
+                            <TableRow
+                                key={produs.getId()}
+                                sx={{
+                                    backgroundColor:
+                                        index % 2 === 0 ? "grey.50" : "white",
+                                    "&:hover": { backgroundColor: "grey.100" },
+                                    cursor: "pointer",
+                                }}
+                            >
                                 <TableCell align="center">
                                     {produs.getNume()}
                                 </TableCell>
